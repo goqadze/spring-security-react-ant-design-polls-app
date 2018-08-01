@@ -8,6 +8,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+
 @Component
 public class DataInitializer {
 
@@ -25,10 +29,11 @@ public class DataInitializer {
     }
 
     private void initRoles() {
-        Role roleUser = new Role(RoleName.ROLE_USER);
-        Role roleAdmin = new Role(RoleName.ROLE_ADMIN);
-
-        this.roles.save(roleUser);
-        this.roles.save(roleAdmin);
+        Arrays.stream(RoleName.values()).forEach(value-> {
+            Optional<Role> role = this.roles.findByName(value);
+            if (!role.isPresent()) {
+                this.roles.save(new Role(value));
+            }
+        });
     }
 }
